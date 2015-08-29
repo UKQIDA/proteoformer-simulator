@@ -1,6 +1,9 @@
 
 package uk.ac.liv.proteoformer.simulator;
 
+import gnu.trove.map.TDoubleDoubleMap;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
@@ -10,7 +13,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.math3.distribution.NormalDistribution;
 
 /**
  *
@@ -63,7 +65,17 @@ public class Simulator {
                     .required(true)
                     .desc(CliConstants.OUTPUT_DESCRIPTION)
                     .build());
-
+            
+            //example
+            args = new String[6];
+            args[0] = "-s";
+            args[1] = "MRLSSPASLAVLRFRPLCIFFFQVLPSKSCFPRFSVTPFSSVFTFLLRPPVSSFPSSFSPRMPQREETPLLARVSA"
+                    + "PLSEREELVSLVVCLPASLHLLSANSLLLLSVGRSSSRRNFLLRGNNREGGEKRTAFQERREKRTGTNKRGKNEESLREKRATPEVESQHQVKALFVGASLPFCPRPFWSLRSLSLHI";
+            args[2] = "-w";
+            args[3] = "13";
+            args[4] = "-o";
+            args[5] = "peakMap.csv";
+            
             // parse command line
             CommandLine line = parser.parse(options, args);
 
@@ -78,6 +90,11 @@ public class Simulator {
                     String out = line.getOptionValue("o");
                     String widthString = line.getOptionValue("w");
                     int width = Integer.parseInt(widthString);
+
+                    SimulatorBuilder simBuilder = new SimulatorBuilder(seq, width);
+
+                    TDoubleDoubleMap peakMap = simBuilder.getPeakMap();
+                    write(peakMap, out);
                 }
                 catch (NumberFormatException nfex) {
                     throw new IllegalArgumentException("Input width is not an integer: " + nfex.getMessage() + ".\n");
@@ -88,6 +105,20 @@ public class Simulator {
         catch (ParseException ex) {
             Logger.getLogger(Simulator.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    private static void write(TDoubleDoubleMap peakMap, String out) {
+
+        try (FileWriter writer = new FileWriter(out)) {
+            writer.write("mz, intensity\n");
+            for (double mz : peakMap.keys()) {
+                writer.write(String.valueOf(mz) + ", " + String.valueOf(peakMap.get(mz)) + "\n");
+            }
+        }
+        catch (IOException ex) {
+            Logger.getLogger(Simulator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
 }

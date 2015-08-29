@@ -23,6 +23,30 @@ public class BaseIsotopomer implements Isotopomer {
         this.sequence = seq;
         this.width = wid;
         this.peakMap = new TDoubleDoubleHashMap();
+        double averageMass = calculateAverageMass(this.sequence);
+        if (width < 2) {
+            throw new IllegalArgumentException("The width of isotopomer window must bigger than 2!\n");
+        }
+        // assuming the x-axis range of normal distribution from -3 to 3
+        double step = 6.0 / (this.width - 1);
+
+        // calculates left side of the peaks including the average mass
+        double x = 0.0;
+        for (int i = 0; i < width / 2; i++) {
+            double mass = averageMass - i;
+            double intensity = nd.density(x);
+            x -= step;
+            peakMap.put(mass, intensity);
+        }
+
+        // calculate right side of the peaks excluding the average mass
+        x = step; // reset x
+        for (int i = 0; i < width / 2; i++) {
+            double mass = averageMass + i + 1;
+            double intensity = nd.density(x);
+            x += step;
+            peakMap.put(mass, intensity);
+        }
     }
 
     BaseIsotopomer(String seq) {
@@ -36,31 +60,6 @@ public class BaseIsotopomer implements Isotopomer {
 
     @Override
     public TDoubleDoubleMap getPeakMap() {
-        double averageMass = calculateAverageMass(this.sequence);
-        if (width < 2) {
-            throw new IllegalArgumentException("The width of isotopomer window must bigger than 2!\n");
-        }
-        // assuming the x-axis range of normal distribution from -3 to 3
-        double step = 6.0 / (this.width - 1);
-
-        // calculates left side of the peaks including the average mass
-        double x = 0.0;
-        for (int i = 0; i > width / 2; i++) {
-            double mass = averageMass - i;
-            double intensity = nd.density(x);
-            x -= step;
-            peakMap.put(mass, intensity);
-        }
-
-        // calculate right side of the peaks excluding the average mass
-        x = step; // reset x
-        for (int i = 0; i > width / 2; i++) {
-            double mass = averageMass + i + 1;
-            double intensity = nd.density(x);
-            x += step;
-            peakMap.put(mass, intensity);
-        }
-
         return peakMap;
     }
 

@@ -34,7 +34,7 @@ public interface Isotopomer {
         for (double mz : peakMap.keys()) {
             double intensity = peakMap.get(mz);
             scPeakMap.put(mz, intensity * factor);
-        }
+}
         return scPeakMap;
     }
 

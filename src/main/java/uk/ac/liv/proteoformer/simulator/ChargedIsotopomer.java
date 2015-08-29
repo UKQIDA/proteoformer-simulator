@@ -20,6 +20,12 @@ public class ChargedIsotopomer implements Isotopomer {
         this.baseIsotopomer = bIs;
         this.chargeState = charge;
         this.peakMap = new TDoubleDoubleHashMap();
+        TDoubleDoubleMap basePeakMap = this.baseIsotopomer.getPeakMap();
+        for (double mass : basePeakMap.keys()) {
+            double mz = mass / this.chargeState + CliConstants.PROTON_MASS;
+            double intensity = basePeakMap.get(mass);
+            peakMap.put(mz, intensity);
+        }
     }
 
     public int getChargeState() {
@@ -33,12 +39,6 @@ public class ChargedIsotopomer implements Isotopomer {
 
     @Override
     public TDoubleDoubleMap getPeakMap() {
-        TDoubleDoubleMap basePeakMap = this.baseIsotopomer.getPeakMap();
-        for (double mass : basePeakMap.keys()) {
-            double mz = mass / this.chargeState + CliConstants.PROTON_MASS;
-            double intensity = basePeakMap.get(mass);
-            peakMap.put(mz, intensity);
-        }
         return peakMap;
     }
 

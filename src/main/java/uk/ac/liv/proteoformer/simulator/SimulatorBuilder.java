@@ -1,7 +1,9 @@
 
 package uk.ac.liv.proteoformer.simulator;
 
+import gnu.trove.map.TDoubleDoubleMap;
 import gnu.trove.map.TIntDoubleMap;
+import gnu.trove.map.hash.TDoubleDoubleHashMap;
 import gnu.trove.map.hash.TIntDoubleHashMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +20,13 @@ public class SimulatorBuilder {
     private final String sequence;
     private final int isotopomerWidth;
     private final List<Isotopomer> isotopomerList;
+    private final TDoubleDoubleMap peakMap;
 
     SimulatorBuilder(String seq, int isoWidth) {
         this.sequence = seq;
         this.isotopomerWidth = isoWidth;
         isotopomerList = new ArrayList<>();
+        peakMap = new TDoubleDoubleHashMap();
         initial();
     }
 
@@ -42,7 +46,7 @@ public class SimulatorBuilder {
         double step = 6.0 / totalChargeState;
         //calculate right side of the central charge state (inclusive) to 10+ charge
         double x = 0.0;
-        for (int i = centralCharge; i > 9; i--) {
+        for (int i = centralCharge; i > 8; i--) {
             double factor = nd.density(x);
             x += step;
             chargeScaleMap.put(i, factor);
@@ -55,6 +59,45 @@ public class SimulatorBuilder {
             x += step;
             chargeScaleMap.put(i, factor);
         }
+
+        //build list of Isotopomer
+        for (int charge : chargeScaleMap.keys()) {
+            ChargedIsotopomer cIso = new ChargedIsotopomer(bIso, charge);
+            isotopomerList.add(cIso);
+
+            TDoubleDoubleMap tempPeakMap = cIso.getScaledPeakMap(chargeScaleMap.get(charge));
+
+            for (double mz : tempPeakMap.keys()) {
+                double intensity = peakMap.get(mz);
+                if (intensity == peakMap.getNoEntryValue()) {
+                    peakMap.put(mz, tempPeakMap.get(mz));
+                }
+                else {
+                    peakMap.put(mz, intensity + tempPeakMap.get(mz));
+                }
+            }
+        }
+    }
+
+    /**
+     * @return the isotopomerWidth
+     */
+    public int getIsotopomerWidth() {
+        return isotopomerWidth;
+    }
+
+    /**
+     * @return the isotopomerList
+     */
+    public List<Isotopomer> getIsotopomerList() {
+        return isotopomerList;
+    }
+
+    /**
+     * @return the peakMap
+     */
+    public TDoubleDoubleMap getPeakMap() {
+        return peakMap;
     }
 
 }
