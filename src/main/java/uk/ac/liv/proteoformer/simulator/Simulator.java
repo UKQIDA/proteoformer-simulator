@@ -54,7 +54,7 @@ public class Simulator {
                     .required(true)
                     .desc("the width of isotopomer window.")
                     .build());
-            
+
             String outOpt = "output";
             options.addOption(Option.builder("o")
                     .hasArg()
@@ -73,8 +73,15 @@ public class Simulator {
                 formatter.printHelp("Proteoformer Simulator", options);
             }
             else {
-                String seq = line.getOptionValue("s");
-                String out = line.getOptionValue("o");
+                try {
+                    String seq = line.getOptionValue("s");
+                    String out = line.getOptionValue("o");
+                    String widthString = line.getOptionValue("w");
+                    int width = Integer.parseInt(widthString);
+                }
+                catch (NumberFormatException nfex) {
+                    throw new IllegalArgumentException("Input width is not an integer: " + nfex.getMessage() + ".\n");
+                }
 
             }
         }

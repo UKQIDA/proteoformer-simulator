@@ -42,4 +42,11 @@ public class ChargedIsotopomer implements Isotopomer {
         return peakMap;
     }
 
+    /**
+     * @return the baseIsotopomer
+     */
+    public BaseIsotopomer getBaseIsotopomer() {
+        return baseIsotopomer;
+    }
+
 }

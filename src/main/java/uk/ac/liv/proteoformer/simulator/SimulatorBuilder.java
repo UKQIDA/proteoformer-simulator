@@ -1,6 +1,12 @@
 
 package uk.ac.liv.proteoformer.simulator;
 
+import gnu.trove.map.TIntDoubleMap;
+import gnu.trove.map.hash.TIntDoubleHashMap;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.commons.math3.distribution.NormalDistribution;
+
 /**
  *
  * @author Da Qi
@@ -10,9 +16,13 @@ package uk.ac.liv.proteoformer.simulator;
 public class SimulatorBuilder {
 
     private final String sequence;
+    private final int isotopomerWidth;
+    private final List<Isotopomer> isotopomerList;
 
-    SimulatorBuilder(String seq) {
+    SimulatorBuilder(String seq, int isoWidth) {
         this.sequence = seq;
+        this.isotopomerWidth = isoWidth;
+        isotopomerList = new ArrayList<>();
         initial();
     }
 
@@ -24,7 +34,27 @@ public class SimulatorBuilder {
     }
 
     private void initial() {
-        
+        NormalDistribution nd = new NormalDistribution();
+        BaseIsotopomer bIso = new BaseIsotopomer(this.sequence, this.isotopomerWidth);
+        TIntDoubleMap chargeScaleMap = new TIntDoubleHashMap();
+        int centralCharge = bIso.getCentralChargeState();
+        int totalChargeState = bIso.getMaxChargeState() - 9;
+        double step = 6.0 / totalChargeState;
+        //calculate right side of the central charge state (inclusive) to 10+ charge
+        double x = 0.0;
+        for (int i = centralCharge; i > 9; i--) {
+            double factor = nd.density(x);
+            x += step;
+            chargeScaleMap.put(i, factor);
+        }
+
+        //calculate left side of the central charge state (exclusive) to max charge
+        x = step;
+        for (int i = centralCharge + 1; i <= bIso.getMaxChargeState(); i++) {
+            double factor = nd.density(x);
+            x += step;
+            chargeScaleMap.put(i, factor);
+        }
     }
 
 }

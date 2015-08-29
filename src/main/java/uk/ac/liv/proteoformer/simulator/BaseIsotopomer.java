@@ -25,6 +25,10 @@ public class BaseIsotopomer implements Isotopomer {
         this.peakMap = new TDoubleDoubleHashMap();
     }
 
+    BaseIsotopomer(String seq) {
+        this(seq, 3);
+    }
+
     @Override
     public String getSequence() {
         return this.sequence;
@@ -37,7 +41,7 @@ public class BaseIsotopomer implements Isotopomer {
             throw new IllegalArgumentException("The width of isotopomer window must bigger than 2!\n");
         }
         // assuming the x-axis range of normal distribution from -3 to 3
-        double step = 6 / (this.width - 1);
+        double step = 6.0 / (this.width - 1);
 
         // calculates left side of the peaks including the average mass
         double x = 0.0;
