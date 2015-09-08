@@ -54,7 +54,7 @@ public class Simulator {
                     .argName("width")
                     .longOpt(widOpt)
                     //.required(true)
-                    .desc("the width of isotopomer window.")
+                    .desc("the number of peaks in isotopomer pattern.")
                     .build());
 
             String outOpt = "output";
@@ -65,18 +65,17 @@ public class Simulator {
                     //.required(true)
                     .desc(CliConstants.OUTPUT_DESCRIPTION)
                     .build());
-            
+
             //example
-            args = new String[6];
-            args[0] = "-s";
-            args[1] = "MRLSSPASLAVLRFRPLCIFFFQVLPSKSCFPRFSVTPFSSVFTFLLRPPVSSFPSSFSPRMPQREETPLLARVSA"
-                    + "PLSEREELVSLVVCLPASLHLLSANSLLLLSVGRSSSRRNFLLRGNNREGGEKRTAFQERREKRTGTNKRGKNEESLREKRATPEVESQHQVKALFVGASLPFCPRPFWSLRSLSLHI"
-                    + ";PLSEREELVSLVVCLPASLHLLSANSLLLLSVGRSSSRRNFLLRGNNREGGEKRTAFQERREKRTGTNKRGKNEESLREKRATPEVESQHQVKALFVGASLPFCPRPFWSLRSLSLHI";
-            args[2] = "-w";
-            args[3] = "13";
-            args[4] = "-o";
-            args[5] = "peakMap.csv";
-            
+//            args = new String[6];
+//            args[0] = "-s";
+//            args[1] = "MRLSSPASLAVLRFRPLCIFFFQVLPSKSCFPRFSVTPFSSVFTFLLRPPVSSFPSSFSPRMPQREETPLLARVSA"
+//                    + "PLSEREELVSLVVCLPASLHLLSANSLLLLSVGRSSSRRNFLLRGNNREGGEKRTAFQERREKRTGTNKRGKNEESLREKRATPEVESQHQVKALFVGASLPFCPRPFWSLRSLSLHI"
+//                    + ";PLSEREELVSLVVCLPASLHLLSANSLLLLSVGRSSSRRNFLLRGNNREGGEKRTAFQERREKRTGTNKRGKNEESLREKRATPEVESQHQVKALFVGASLPFCPRPFWSLRSLSLHI";
+//            args[2] = "-w";
+//            args[3] = "13";
+//            args[4] = "-o";
+//            args[5] = "peakMap.csv";
             // parse command line
             CommandLine line = parser.parse(options, args);
 
@@ -85,12 +84,22 @@ public class Simulator {
                 HelpFormatter formatter = new HelpFormatter();
                 formatter.printHelp("Proteoformer Simulator", options);
             }
+            else if (line.getOptionValue(seqOpt) == null || line.getOptionValue(seqOpt).isEmpty()) {
+                throw new IllegalArgumentException("Missing protein sequence(s)!");
+            }
             else {
                 try {
                     String seq = line.getOptionValue("s");
                     String out = line.getOptionValue("o");
+                    if (out == null || out.isEmpty()) {
+                        throw new IllegalArgumentException("Missing output file!");
+                    }
                     String widthString = line.getOptionValue("w");
-                    int width = Integer.parseInt(widthString);
+                    int width = 13; //Default number of peaks
+
+                    if (!widthString.isEmpty()) {
+                        width = Integer.parseInt(widthString);
+                    }
 
                     SimulatorBuilder simBuilder = new SimulatorBuilder(seq, width);
 
