@@ -44,7 +44,7 @@ public class Simulator {
                     .hasArg()
                     .argName("Protein Sequence")
                     .longOpt(seqOpt)
-                    .required(true)
+                    //.required(true)
                     .desc(CliConstants.SEQ_DESCRIPTION)
                     .build());
 
@@ -53,7 +53,7 @@ public class Simulator {
                     .hasArg()
                     .argName("width")
                     .longOpt(widOpt)
-                    .required(true)
+                    //.required(true)
                     .desc("the width of isotopomer window.")
                     .build());
 
@@ -62,7 +62,7 @@ public class Simulator {
                     .hasArg()
                     .argName("output csv file")
                     .longOpt(outOpt)
-                    .required(true)
+                    //.required(true)
                     .desc(CliConstants.OUTPUT_DESCRIPTION)
                     .build());
             
@@ -70,7 +70,8 @@ public class Simulator {
             args = new String[6];
             args[0] = "-s";
             args[1] = "MRLSSPASLAVLRFRPLCIFFFQVLPSKSCFPRFSVTPFSSVFTFLLRPPVSSFPSSFSPRMPQREETPLLARVSA"
-                    + "PLSEREELVSLVVCLPASLHLLSANSLLLLSVGRSSSRRNFLLRGNNREGGEKRTAFQERREKRTGTNKRGKNEESLREKRATPEVESQHQVKALFVGASLPFCPRPFWSLRSLSLHI";
+                    + "PLSEREELVSLVVCLPASLHLLSANSLLLLSVGRSSSRRNFLLRGNNREGGEKRTAFQERREKRTGTNKRGKNEESLREKRATPEVESQHQVKALFVGASLPFCPRPFWSLRSLSLHI"
+                    + ";PLSEREELVSLVVCLPASLHLLSANSLLLLSVGRSSSRRNFLLRGNNREGGEKRTAFQERREKRTGTNKRGKNEESLREKRATPEVESQHQVKALFVGASLPFCPRPFWSLRSLSLHI";
             args[2] = "-w";
             args[3] = "13";
             args[4] = "-o";

@@ -39,41 +39,44 @@ public class SimulatorBuilder {
 
     private void initial() {
         NormalDistribution nd = new NormalDistribution();
-        BaseIsotopomer bIso = new BaseIsotopomer(this.sequence, this.isotopomerWidth);
-        TIntDoubleMap chargeScaleMap = new TIntDoubleHashMap();
-        int centralCharge = bIso.getCentralChargeState();
-        int totalChargeState = bIso.getMaxChargeState() - 9;
-        double step = 6.0 / totalChargeState;
-        //calculate right side of the central charge state (inclusive) to 10+ charge
-        double x = 0.0;
-        for (int i = centralCharge; i > 8; i--) {
-            double factor = nd.density(x);
-            x += step;
-            chargeScaleMap.put(i, factor);
-        }
+        String[] seqList = this.sequence.split(";");
+        for (String seq : seqList) {
+            BaseIsotopomer bIso = new BaseIsotopomer(seq, this.isotopomerWidth);
+            TIntDoubleMap chargeScaleMap = new TIntDoubleHashMap();
+            int centralCharge = bIso.getCentralChargeState();
+            int totalChargeState = (bIso.getMaxChargeState() - centralCharge) * 2;
+            double step = 6.0 / totalChargeState;
+            //calculate right side of the central charge state (inclusive) to 10+ charge
+            double x = 0.0;
+            for (int i = centralCharge; i > 8; i--) {
+                double factor = nd.density(x);
+                x += step;
+                chargeScaleMap.put(i, factor);
+            }
 
-        //calculate left side of the central charge state (exclusive) to max charge
-        x = step;
-        for (int i = centralCharge + 1; i <= bIso.getMaxChargeState(); i++) {
-            double factor = nd.density(x);
-            x += step;
-            chargeScaleMap.put(i, factor);
-        }
+            //calculate left side of the central charge state (exclusive) to max charge
+            x = step;
+            for (int i = centralCharge + 1; i <= bIso.getMaxChargeState(); i++) {
+                double factor = nd.density(x);
+                x += step;
+                chargeScaleMap.put(i, factor);
+            }
 
-        //build list of Isotopomer
-        for (int charge : chargeScaleMap.keys()) {
-            ChargedIsotopomer cIso = new ChargedIsotopomer(bIso, charge);
-            isotopomerList.add(cIso);
+            //build list of Isotopomer
+            for (int charge : chargeScaleMap.keys()) {
+                ChargedIsotopomer cIso = new ChargedIsotopomer(bIso, charge);
+                isotopomerList.add(cIso);
 
-            TDoubleDoubleMap tempPeakMap = cIso.getScaledPeakMap(chargeScaleMap.get(charge));
+                TDoubleDoubleMap tempPeakMap = cIso.getScaledPeakMap(chargeScaleMap.get(charge));
 
-            for (double mz : tempPeakMap.keys()) {
-                double intensity = peakMap.get(mz);
-                if (intensity == peakMap.getNoEntryValue()) {
-                    peakMap.put(mz, tempPeakMap.get(mz));
-                }
-                else {
-                    peakMap.put(mz, intensity + tempPeakMap.get(mz));
+                for (double mz : tempPeakMap.keys()) {
+                    double intensity = peakMap.get(mz);
+                    if (intensity == peakMap.getNoEntryValue()) {
+                        peakMap.put(mz, tempPeakMap.get(mz));
+                    }
+                    else {
+                        peakMap.put(mz, intensity + tempPeakMap.get(mz));
+                    }
                 }
             }
         }
