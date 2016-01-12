@@ -54,7 +54,7 @@ public class Simulator {
                     .argName("width")
                     .longOpt(widOpt)
                     //.required(true)
-                    .desc("the number of peaks in isotopomer pattern.")
+                    .desc("the number of peaks in isotopomer pattern. Default number is 13.")
                     .build());
 
             String outOpt = "output";

@@ -33,7 +33,7 @@ public interface Isotopomer {
         TDoubleDoubleMap peakMap = this.getPeakMap();
         for (double mz : peakMap.keys()) {
             double intensity = peakMap.get(mz);
-            scPeakMap.put(mz, intensity * factor);
+            scPeakMap.put(mz, intensity * factor*10000);
 }
         return scPeakMap;
     }

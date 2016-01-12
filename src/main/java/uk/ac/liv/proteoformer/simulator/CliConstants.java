@@ -10,7 +10,7 @@ package uk.ac.liv.proteoformer.simulator;
 public class CliConstants {
 
     public static final String HELP_DESCRIPTION = "print help message.";
-    public static final String SEQ_DESCRIPTION = "protein sequence.";
+    public static final String SEQ_DESCRIPTION = "protein sequence sperated by semicolon for multiple sequences.";
     public static final String OUTPUT_DESCRIPTION = "output csv file name.";
     public static final String RES_DESCRIPTION = "output result file.";
     public static final String RES_FULL_DESCRIPTION = "output full result file.";
